@@ -1,0 +1,27 @@
+{
+  "payload": {
+    "export": "cart-validations-generate-run",
+    "target": "cart.validations.generate.run",
+    "input": {
+      "buyerJourney": { "step": "CHECKOUT_INTERACTION" },
+      "cart": {
+        "deliveryGroups": [{
+          "deliveryAddress": {
+            "address1": "123 Main Street",
+            "address2": "Suite 200",
+            "city": "Austin",
+            "provinceCode": "TX",
+            "zip": "78701",
+            "countryCode": "US"
+          }
+        }],
+        "validation": { "metafield": null }
+      }
+    },
+    "output": {
+      "operations": [{
+        "validationAdd": { "errors": [] }
+      }]
+    }
+  }
+}
