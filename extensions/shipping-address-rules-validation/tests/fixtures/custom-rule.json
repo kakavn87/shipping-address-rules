@@ -1,0 +1,45 @@
+{
+  "payload": {
+    "export": "cart-validations-generate-run",
+    "target": "cart.validations.generate.run",
+    "input": {
+      "buyerJourney": { "step": "CHECKOUT_INTERACTION" },
+      "cart": {
+        "deliveryGroups": [{
+          "deliveryAddress": {
+            "address1": "123 Main Street",
+            "address2": null,
+            "city": "Austin",
+            "provinceCode": "TX",
+            "zip": "99999",
+            "countryCode": "US"
+          }
+        }],
+        "validation": {
+          "metafield": {
+            "jsonValue": {
+              "po": { "enabled": false },
+              "military": { "enabled": false },
+              "rules": [{
+                "field": "zip",
+                "operator": "eq",
+                "value": "99999",
+                "message": "We do not ship to this ZIP code."
+              }]
+            }
+          }
+        }
+      }
+    },
+    "output": {
+      "operations": [{
+        "validationAdd": {
+          "errors": [{
+            "message": "We do not ship to this ZIP code.",
+            "target": "$.cart.deliveryGroups[0].deliveryAddress.address1"
+          }]
+        }
+      }]
+    }
+  }
+}
