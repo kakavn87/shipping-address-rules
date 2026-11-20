@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type {
   ActionFunctionArgs,
   HeadersFunction,
@@ -334,8 +334,11 @@ export default function Index() {
   const [config, setConfig] = useState<RuleConfig>(validation?.config ?? DEFAULT_CONFIG);
   const [enabled, setEnabled] = useState(Boolean(validation?.enabled));
 
+  const handledFetcherData = useRef<typeof fetcher.data>(undefined);
+
   useEffect(() => {
-    if (!fetcher.data) return;
+    if (!fetcher.data || handledFetcherData.current === fetcher.data) return;
+    handledFetcherData.current = fetcher.data;
 
     if (fetcher.data.ok) {
       setEnabled(Boolean(fetcher.data.enabled));
@@ -345,7 +348,7 @@ export default function Index() {
       setEnabled(Boolean(validation?.enabled));
       shopify.toast.show(fetcher.data.error, { isError: true });
     }
-  }, [fetcher.data, shopify, revalidator, validation?.enabled]);
+  }, [fetcher.data, shopify, revalidator, validation]);
 
   useEffect(() => {
     if (validation) {
@@ -424,7 +427,10 @@ export default function Index() {
               checked={enabled}
               onChange={toggleProtection}
             />
-            <s-badge tone={enabled ? "success" : "neutral"}>
+            <s-badge
+              tone={enabled ? "success" : "neutral"}
+              color={enabled ? "strong" : "base"}
+            >
               {enabled ? "ON" : "OFF"}
             </s-badge>
           </s-stack>
