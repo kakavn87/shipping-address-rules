@@ -8,7 +8,7 @@ import { useFetcher, useLoaderData, useRevalidator } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
-import appStylesHref from "./app._index.css?url";
+import appStylesHref from "../styles/shipping-address-rules.css?url";
 
 export function links() {
   return [{ rel: "stylesheet", href: appStylesHref }];
