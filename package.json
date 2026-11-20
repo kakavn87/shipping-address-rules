@@ -1,0 +1,16 @@
+{
+  "name": "shipping-address-rules",
+  "private": true,
+  "workspaces": ["extensions/*"],
+  "scripts": {
+    "test:function": "npm --workspace extensions/cart-checkout-validation exec vitest run",
+    "typegen:function": "shopify app function typegen --path extensions/cart-checkout-validation",
+    "build:function": "npm --workspace extensions/cart-checkout-validation run build"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.0"
+  }
+}
