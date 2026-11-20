@@ -419,7 +419,13 @@ export default function Index() {
 
   return (
     <s-page className="sar-page">
-      {toast && <div className={"sar-toast" + (toast.error ? " error" : "")} role="status"><span className="sar-toast-icon">{toast.error ? "!" : "✓"}</span><span>{toast.message}</span><button className="sar-toast-close" onClick={() => setToast(null)} aria-label="Close notification">×</button></div>
+      {toast && (
+        <div className={"sar-toast" + (toast.error ? " error" : "")} role="status">
+          <span className="sar-toast-icon">{toast.error ? "!" : "✓"}</span>
+          <span>{toast.message}</span>
+          <button className="sar-toast-close" onClick={() => setToast(null)} aria-label="Close notification">×</button>
+        </div>
+      )}
       <div className="sar-top">
         <div className="sar-brand">
           <div className="sar-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 3 20 6v5c0 5-3.2 8.5-8 10-4.8-1.5-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></div>
