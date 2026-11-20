@@ -8,6 +8,7 @@ import { useFetcher, useLoaderData, useRevalidator } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
+import "./app._index.css";
 
 const FUNCTION_HANDLE = "shipping-address-rules-validation";
 const VALIDATION_TITLE = "Shipping Address Rules";
@@ -408,189 +409,69 @@ export default function Index() {
   };
 
   return (
-    <s-page heading="Shipping Address Rules">
-      <s-button
-        slot="primary-action"
-        variant="primary"
-        disabled={overLimit || saving ? true : undefined}
-        onClick={() => submitConfig("save")}
-      >
-        {saving ? "Saving…" : "Save settings"}
-      </s-button>
+    <s-page className="sar-page">
+      <div className="sar-top">
+        <div className="sar-brand">
+          <div className="sar-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 3 20 6v5c0 5-3.2 8.5-8 10-4.8-1.5-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></div>
+          <div><h1 className="sar-title">Shipping Address Rules</h1><p className="sar-subtitle">Prevent restricted shipping addresses before checkout</p></div>
+        </div>
+        <div className="sar-status"><span className="sar-dot"/>{enabled ? "Protected" : "Protection off"}</div>
+      </div>
 
-      <s-section>
-        <s-stack gap="base">
-          <s-checkbox
-            label="Protect checkout"
-            details="Block restricted shipping addresses before the customer can complete checkout."
-            checked={enabled}
-            onChange={toggleProtection}
-          />
-          {!validation && (
-            <s-banner tone="info">
-              Protection is not installed yet. Turn it on to create the Shopify
-              checkout validation automatically.
-            </s-banner>
-          )}
-          {validation && !validation.blockOnFailure && (
-            <s-text tone="neutral">
-              Runtime failures do not block checkout. Only actual rule violations do.
-            </s-text>
-          )}
-        </s-stack>
-      </s-section>
+      <div className="sar-hero">
+        <div className="sar-hero-left">
+          <div className="sar-hero-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9"><path d="M12 3 20 6v5c0 5-3.2 8.5-8 10-4.8-1.5-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></div>
+          <div><h2 className="sar-h2">Checkout Protection</h2><p className="sar-copy">Block restricted shipping addresses before the customer can complete checkout.</p></div>
+        </div>
+        <button className={"sar-switch" + (enabled ? "" : " off")} onClick={toggleProtection} aria-pressed={enabled}>
+          {enabled ? "ON" : "OFF"}<span className="sar-knob"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">{enabled ? <path d="m6 12 4 4 8-8"/> : <path d="M7 7l10 10M17 7 7 17"/>}</svg></span>
+        </button>
+      </div>
 
-      <s-section heading="PO Box protection">
-        <s-stack gap="base">
-          <s-checkbox
-            label="Block PO Box addresses"
-            details="Covers PO Box, P.O. Box, POB, P.O.B, Post Office Box and Post Box variants."
-            checked={config.po.enabled}
-            onChange={(event) =>
-              setConfig((current) => ({
-                ...current,
-                po: { ...current.po, enabled: (event.currentTarget as unknown as { checked: boolean }).checked },
-              }))
-            }
-          />
-          <s-text-field
-            label="Customer-facing error message"
-            value={config.po.message}
-            onChange={(event) =>
-              setConfig((current) => ({
-                ...current,
-                po: { ...current.po, message: event.currentTarget.value },
-              }))
-            }
-          />
-        </s-stack>
-      </s-section>
+      {!validation && <div className="sar-card" style={{marginTop:18,borderColor:"#bfdbfe",background:"#eff6ff"}}><strong style={{color:"#1e40af"}}>Protection is not installed yet.</strong><span style={{marginLeft:8,color:"#475467",fontSize:13}}>Turn it on to create the Shopify checkout validation automatically.</span></div>}
 
-      <s-section heading="APO / FPO / DPO protection">
-        <s-stack gap="base">
-          <s-checkbox
-            label="Block military addresses"
-            details="Blocks APO, FPO and DPO shipping addresses."
-            checked={config.military.enabled}
-            onChange={(event) =>
-              setConfig((current) => ({
-                ...current,
-                military: {
-                  ...current.military,
-                  enabled: (event.currentTarget as unknown as { checked: boolean }).checked,
-                },
-              }))
-            }
-          />
-          <s-text-field
-            label="Customer-facing error message"
-            value={config.military.message}
-            onChange={(event) =>
-              setConfig((current) => ({
-                ...current,
-                military: {
-                  ...current.military,
-                  message: event.currentTarget.value,
-                },
-              }))
-            }
-          />
-        </s-stack>
-      </s-section>
+      <div className="sar-grid">
+        <div className="sar-card sar-protection">
+          <div><div className="sar-card-head"><div className="sar-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="m4 8 8-4 8 4-8 4-8-4Z"/><path d="M4 8v8l8 4 8-4V8"/></svg></div><div><h2 className="sar-h2" style={{fontSize:17}}>PO Box Protection</h2><p className="sar-copy">Block PO Box addresses and common variants.</p></div></div><span className="sar-badge">{config.po.enabled ? "Protection active" : "Protection disabled"}</span></div>
+          <button className={"sar-check" + (config.po.enabled ? " checked" : "")} onClick={() => setConfig((x) => ({...x,po:{...x.po,enabled:!x.po.enabled}}))} aria-label="Toggle PO Box protection">{config.po.enabled && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.7"><path d="m5 12 4 4L19 6"/></svg>}</button>
+        </div>
+        <div className="sar-card sar-protection">
+          <div><div className="sar-card-head"><div className="sar-card-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 11h18M12 3v18M5 7l14 10M19 7 5 17"/></svg></div><div><h2 className="sar-h2" style={{fontSize:17}}>APO / FPO / DPO Protection</h2><p className="sar-copy">Block military shipping addresses.</p></div></div><span className="sar-badge">{config.military.enabled ? "Protection active" : "Protection disabled"}</span></div>
+          <button className={"sar-check" + (config.military.enabled ? " checked" : "")} onClick={() => setConfig((x) => ({...x,military:{...x.military,enabled:!x.military.enabled}}))} aria-label="Toggle military protection">{config.military.enabled && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.7"><path d="m5 12 4 4L19 6"/></svg>}</button>
+        </div>
+      </div>
 
-      <s-section heading="Custom shipping rules">
-        <s-stack gap="base">
-          <s-text tone="neutral">
-            Add precise rules for country, state, ZIP, city, address or keyword matches.
-          </s-text>
-          {config.rules.map((rule, index) => (
-            <s-box key={index} padding="base" borderWidth="base" borderRadius="base">
-              <s-stack gap="base">
-                <s-select
-                  label="Field"
-                  value={rule.field}
-                  onChange={(event) =>
-                    updateRule(index, {
-                      field: event.currentTarget.value as Rule["field"],
-                    })
-                  }
-                >
-                  <s-option value="country">Country</s-option>
-                  <s-option value="state">State / Province</s-option>
-                  <s-option value="zip">ZIP / Postal code</s-option>
-                  <s-option value="city">City</s-option>
-                  <s-option value="address">Address</s-option>
-                  <s-option value="keyword">Keyword</s-option>
-                </s-select>
-                <s-select
-                  label="Operator"
-                  value={rule.operator}
-                  onChange={(event) =>
-                    updateRule(index, {
-                      operator: event.currentTarget.value as Rule["operator"],
-                    })
-                  }
-                >
-                  <s-option value="contains">Contains</s-option>
-                  <s-option value="eq">Equals</s-option>
-                </s-select>
-                <s-text-field
-                  label="Value"
-                  value={rule.value}
-                  onChange={(event) =>
-                    updateRule(index, { value: event.currentTarget.value })
-                  }
-                />
-                <s-text-field
-                  label="Customer-facing error message"
-                  value={rule.message}
-                  onChange={(event) =>
-                    updateRule(index, { message: event.currentTarget.value })
-                  }
-                />
-                <s-button tone="critical" variant="tertiary" onClick={() => removeRule(index)}>
-                  Remove rule
-                </s-button>
-              </s-stack>
-            </s-box>
+      <div className="sar-card sar-section">
+        <div className="sar-section-head">
+          <div className="sar-section-title"><div className="sar-mini-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div><div><h3>Custom Shipping Rules</h3><p>Add precise rules for countries, regions, ZIP codes and address keywords.</p></div></div>
+          <button className="sar-add" onClick={addRule}>+ Add rule</button>
+        </div>
+        <div className="sar-table">
+          <div className="sar-table-head"><span>#</span><span>Field</span><span>Condition</span><span>Value</span><span>Action</span><span/></div>
+          {config.rules.length === 0 ? <div className="sar-empty">No custom rules yet. Add a rule when you need more control.</div> : config.rules.map((rule,index) => (
+            <div key={index}>
+              <div className="sar-row">
+                <span>{index + 1}</span>
+                <select value={rule.field} onChange={(e) => updateRule(index,{field:e.currentTarget.value as Rule["field"]})}><option value="country">Country</option><option value="state">State / Province</option><option value="zip">ZIP Code</option><option value="city">City</option><option value="address">Address</option><option value="keyword">Keyword</option></select>
+                <select value={rule.operator} onChange={(e) => updateRule(index,{operator:e.currentTarget.value as Rule["operator"]})}><option value="contains">Contains</option><option value="eq">Equals</option></select>
+                <input value={rule.value} onChange={(e) => updateRule(index,{value:e.currentTarget.value})}/>
+                <span className="sar-block-pill">⊘ Block</span>
+                <button className="sar-icon-btn" onClick={() => removeRule(index)} aria-label="Delete rule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7l1-3h4l1 3"/></svg></button>
+              </div>
+              <div style={{padding:"0 14px 14px 45px"}}><label className="sar-field-label">Customer-facing error message</label><input className="sar-message-input" value={rule.message} onChange={(e) => updateRule(index,{message:e.currentTarget.value})}/></div>
+            </div>
           ))}
-          <s-button onClick={addRule}>Add custom rule</s-button>
-        </s-stack>
-      </s-section>
+        </div>
+      </div>
 
-      <s-section heading="Configuration size">
-        <s-stack gap="small-200">
-          <s-stack direction="inline" justifyContent="space-between">
-            <s-text>{bytes.toLocaleString()} / {MAX_CONFIG_BYTES.toLocaleString()} bytes</s-text>
-            <s-text tone={overLimit ? "critical" : bytes > 8000 ? "caution" : "neutral"}>
-              {overLimit ? "Limit exceeded" : bytes > 8000 ? "Approaching limit" : "Within limit"}
-            </s-text>
-          </s-stack>
-          <progress
-            max={MAX_CONFIG_BYTES}
-            value={Math.min(bytes, MAX_CONFIG_BYTES)}
-            style={{ width: "100%" }}
-            aria-label="Configuration size"
-          />
-          <s-text tone="neutral">
-            App limit: 9,500 bytes. The checkout Function receives this JSON configuration
-            on every validation run.
-          </s-text>
-        </s-stack>
-      </s-section>
+      <div className="sar-info-grid">
+        <div className="sar-card sar-info"><div className="sar-info-title"><div className="sar-mini-icon">i</div><span>How it works</span></div><p>Rules run server-side in Shopify checkout using a Checkout Validation Function. Matching addresses show the configured customer-facing message.</p><p className="sar-note">Runtime failures use blockOnFailure=false, so temporary Function failures do not unnecessarily block customers.</p></div>
+        <div className="sar-card sar-info"><div className="sar-info-title"><div className="sar-mini-icon">⚡</div><span>Function Status</span><span className="sar-active">{enabled ? "Active" : "Inactive"}</span></div><p><strong style={{color:enabled ? "#067647" : "#667085"}}>● {enabled ? "Active" : "Inactive"}</strong> · Checkout validation is {enabled ? "running" : "disabled"}.</p><p className="sar-note">{validation ? "Validation is installed and connected to this store." : "Validation will be created automatically when protection is enabled."}</p></div>
+      </div>
 
-      <s-section slot="aside" heading="How it works">
-        <s-stack gap="base">
-          <s-paragraph>
-            Rules run server-side in Shopify checkout. A matching rule blocks checkout
-            with the configured merchant message.
-          </s-paragraph>
-          <s-paragraph>
-            Validation runtime failures are configured with blockOnFailure=false, so a
-            temporary Function failure does not unnecessarily block customers.
-          </s-paragraph>
-        </s-stack>
-      </s-section>
+      <div className="sar-card sar-size"><div className="sar-size-top"><span>Configuration size</span><span>{bytes.toLocaleString()} / {MAX_CONFIG_BYTES.toLocaleString()} bytes · {overLimit ? "Limit exceeded" : bytes > 8000 ? "Approaching limit" : "Within limit"}</span></div><div className="sar-progress"><span style={{width:(Math.min((bytes / MAX_CONFIG_BYTES) * 100,100) + "%")}}/></div><div className="sar-note">App limit: 9,500 bytes. This configuration is delivered to the checkout Function on each validation run.</div></div>
+
+      <div className="sar-savebar"><button className="sar-save" disabled={overLimit || saving} onClick={() => submitConfig("save")}><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v6h8V4M8 20v-6h8v6"/></svg>{saving ? "Saving…" : "Save settings"}</button></div>
     </s-page>
   );
 }
