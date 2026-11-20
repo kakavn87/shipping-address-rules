@@ -1,0 +1,12 @@
+{
+  "name": "shipping-address-rules-function",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "shopify-function-build",
+    "typegen": "shopify app function typegen"
+  },
+  "dependencies": {
+    "@shopify/shopify_function": "^1.0.0"
+  }
+}
