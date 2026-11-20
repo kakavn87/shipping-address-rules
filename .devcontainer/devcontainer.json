@@ -1,0 +1,10 @@
+{
+  "name": "Shopify App Dev",
+  "portsAttributes": {
+    "4040": {
+      "label": "Shopify Proxy",
+      "visibility": "public",
+      "onAutoForward": "notify"
+    }
+  }
+}
