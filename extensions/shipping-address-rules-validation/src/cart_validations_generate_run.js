@@ -149,6 +149,7 @@ export function cartValidationsGenerateRun(input) {
       city: address.city ?? "",
       address1: address.address1 ?? "",
       address2: address.address2 ?? "",
+      keyword: addressText,
     };
 
     for (const rule of config.rules) {
