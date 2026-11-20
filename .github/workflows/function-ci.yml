@@ -20,6 +20,14 @@ jobs:
 
       - run: npm install
 
+      - name: Generate function types
+        working-directory: extensions/shipping-address-rules-validation
+        run: npm run typegen
+
+      - name: Build validation function
+        working-directory: extensions/shipping-address-rules-validation
+        run: npm run build
+
       - name: Run validation function tests
         working-directory: extensions/shipping-address-rules-validation
         run: npm test -- --run
