@@ -1,27 +1,37 @@
 {
   "payload": {
-    "export": "cart.validations.generate.run",
+    "export": "cart-validations-generate-run",
     "target": "cart.validations.generate.run",
     "input": {
-      "buyerJourney": { "step": "CART_INTERACTION" },
+      "buyerJourney": {
+        "step": "CART_INTERACTION"
+      },
       "cart": {
-        "deliveryGroups": [{
-          "deliveryAddress": {
-            "address1": "PO Box 123",
-            "address2": null,
-            "city": "Austin",
-            "provinceCode": "TX",
-            "zip": "78701",
-            "countryCode": "US"
+        "deliveryGroups": [
+          {
+            "deliveryAddress": {
+              "address1": "PO Box 123",
+              "address2": null,
+              "city": "Austin",
+              "provinceCode": "TX",
+              "zip": "78701",
+              "countryCode": "US"
+            }
           }
-        }],
-        "validation": { "metafield": null }
+        ]
+      },
+      "validation": {
+        "metafield": null
       }
     },
     "output": {
-      "operations": [{
-        "validationAdd": { "errors": [] }
-      }]
+      "operations": [
+        {
+          "validationAdd": {
+            "errors": []
+          }
+        }
+      ]
     }
   }
 }
