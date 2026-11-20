@@ -23,10 +23,10 @@ jobs:
 
       - name: Deploy Shopify app version
         env:
-          SHOPIFY_APP_AUTOMATION_TOKEN: ${{ secrets.SHOPIFY_APP_AUTOMATION_TOKEN }}
+          SHOPIFY_SERVICE_ACCOUNT_TOKEN: ${{ secrets.SHOPIFY_SERVICE_ACCOUNT_TOKEN }}
         run: |
-          if [ -z "$SHOPIFY_APP_AUTOMATION_TOKEN" ]; then
-            echo "::error::Missing GitHub Actions secret SHOPIFY_APP_AUTOMATION_TOKEN"
+          if [ -z "$SHOPIFY_SERVICE_ACCOUNT_TOKEN" ]; then
+            echo "::error::Missing GitHub Actions secret SHOPIFY_SERVICE_ACCOUNT_TOKEN"
             exit 1
           fi
           shopify app deploy --allow-updates
