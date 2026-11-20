@@ -10,10 +10,10 @@ query CartValidationsGenerateRunInput {
         countryCode
       }
     }
-    validation {
-      metafield(namespace: "$app:shipping-address-rules", key: "config") {
-        jsonValue
-      }
+  }
+  validation {
+    metafield(namespace: "$app:shipping-address-rules", key: "config") {
+      jsonValue
     }
   }
   buyerJourney {
