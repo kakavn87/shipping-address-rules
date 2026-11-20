@@ -5,7 +5,6 @@ import type {
   LoaderFunctionArgs,
 } from "react-router";
 import { useFetcher, useLoaderData, useRevalidator } from "react-router";
-import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import appStylesHref from "../styles/shipping-address-rules.css?url";
@@ -333,7 +332,7 @@ export default function Index() {
     errors?: Array<{ message?: string }>;
     bytes?: number;
   }>();
-  const shopify = useAppBridge();
+  const [toast, setToast] = useState<{ message: string; error?: boolean } | null>(null);
   const revalidator = useRevalidator();
 
   const [config, setConfig] = useState<RuleConfig>(validation?.config ?? DEFAULT_CONFIG);
@@ -347,13 +346,19 @@ export default function Index() {
 
     if (fetcher.data.ok) {
       setEnabled(Boolean(fetcher.data.enabled));
-      shopify.toast.show(fetcher.data.created ? "Protection enabled" : "Settings saved");
+      setToast({ message: fetcher.data.created ? "Protection enabled" : "Settings saved" });
       revalidator.revalidate();
     } else if (fetcher.data.error) {
       setEnabled(Boolean(validation?.enabled));
-      shopify.toast.show(fetcher.data.error, { isError: true });
+      setToast({ message: fetcher.data.error, error: true });
     }
-  }, [fetcher.data, shopify, revalidator, validation]);
+  }, [fetcher.data, revalidator, validation]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(null), 2600);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
 
   useEffect(() => {
     if (validation) {
@@ -414,6 +419,7 @@ export default function Index() {
 
   return (
     <s-page className="sar-page">
+      {toast && <div className={"sar-toast" + (toast.error ? " error" : "")} role="status"><span className="sar-toast-icon">{toast.error ? "!" : "✓"}</span><span>{toast.message}</span><button className="sar-toast-close" onClick={() => setToast(null)} aria-label="Close notification">×</button></div>
       <div className="sar-top">
         <div className="sar-brand">
           <div className="sar-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 3 20 6v5c0 5-3.2 8.5-8 10-4.8-1.5-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></div>
