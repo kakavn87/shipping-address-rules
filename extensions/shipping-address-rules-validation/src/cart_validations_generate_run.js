@@ -21,58 +21,38 @@ const DEFAULT_CONFIG = {
  * @param {unknown} value
  */
 function parseConfig(value) {
-  if (!value || typeof value !== "object") {
-    return DEFAULT_CONFIG;
-  }
+  if (!value || typeof value !== "object") return DEFAULT_CONFIG;
 
   const config = /** @type {Record<string, unknown>} */ (value);
+  const po = config.po && typeof config.po === "object"
+    ? /** @type {Record<string, unknown>} */ (config.po)
+    : {};
+  const military = config.military && typeof config.military === "object"
+    ? /** @type {Record<string, unknown>} */ (config.military)
+    : {};
 
   return {
     po: {
-      enabled:
-        typeof config.po === "object" &&
-        config.po !== null &&
-        "enabled" in config.po
-          ? Boolean(config.po.enabled)
-          : DEFAULT_CONFIG.po.enabled,
-      message:
-        typeof config.po === "object" &&
-        config.po !== null &&
-        "message" in config.po &&
-        typeof config.po.message === "string"
-          ? config.po.message
-          : DEFAULT_CONFIG.po.message,
+      enabled: typeof po.enabled === "boolean" ? po.enabled : true,
+      message: typeof po.message === "string" && po.message.trim()
+        ? po.message
+        : DEFAULT_CONFIG.po.message,
     },
-
     military: {
-      enabled:
-        typeof config.military === "object" &&
-        config.military !== null &&
-        "enabled" in config.military
-          ? Boolean(config.military.enabled)
-          : DEFAULT_CONFIG.military.enabled,
-      message:
-        typeof config.military === "object" &&
-        config.military !== null &&
-        "message" in config.military &&
-        typeof config.military.message === "string"
-          ? config.military.message
-          : DEFAULT_CONFIG.military.message,
+      enabled: typeof military.enabled === "boolean" ? military.enabled : true,
+      message: typeof military.message === "string" && military.message.trim()
+        ? military.message
+        : DEFAULT_CONFIG.military.message,
     },
-
     rules: Array.isArray(config.rules) ? config.rules : [],
   };
 }
 
 /**
- * Normalize an address value for reliable matching.
- *
  * @param {unknown} value
  */
 function normalize(value) {
-  if (typeof value !== "string") {
-    return "";
-  }
+  if (typeof value !== "string") return "";
 
   return value
     .normalize("NFKC")
@@ -83,26 +63,24 @@ function normalize(value) {
 }
 
 /**
- * @param {string} address
+ * @param {string} value
  */
-function isPoBox(address) {
-  const value = normalize(address);
+function isPoBox(value) {
+  const normalized = normalize(value);
 
   return (
-    /\bP\s*O\s*BOX\b/.test(value) ||
-    /\bP\s*O\s*B\b/.test(value) ||
-    /\bPOST\s+OFFICE\s+BOX\b/.test(value) ||
-    /\bPOST\s+BOX\b/.test(value)
+    /\bP\s*O\s*BOX\b/.test(normalized) ||
+    /\bP\s*O\s*B\b/.test(normalized) ||
+    /\bPOST\s+OFFICE\s+BOX\b/.test(normalized) ||
+    /\bPOST\s+BOX\b/.test(normalized)
   );
 }
 
 /**
- * @param {string} address
+ * @param {string} value
  */
-function isMilitaryAddress(address) {
-  const value = normalize(address);
-
-  return /\b(APO|FPO|DPO)\b/.test(value);
+function isMilitaryAddress(value) {
+  return /\b(APO|FPO|DPO)\b/.test(normalize(value));
 }
 
 /**
@@ -114,26 +92,15 @@ function matchesRule(fields, rule) {
   const operator = typeof rule.operator === "string" ? rule.operator : "";
   const expected = normalize(rule.value);
 
-  if (!field || !expected) {
-    return false;
-  }
+  if (!field || !expected) return false;
 
   const actual = normalize(fields[field]);
+  if (!actual) return false;
 
-  if (!actual) {
-    return false;
-  }
+  if (operator === "eq") return actual === expected;
+  if (operator === "contains") return actual.includes(expected);
 
-  switch (operator) {
-    case "eq":
-      return actual === expected;
-
-    case "contains":
-      return actual.includes(expected);
-
-    default:
-      return false;
-  }
+  return false;
 }
 
 /**
@@ -141,35 +108,18 @@ function matchesRule(fields, rule) {
  * @returns {CartValidationsGenerateRunResult}
  */
 export function cartValidationsGenerateRun(input) {
-  const config = parseConfig(
-    input.cart.validation?.metafield?.jsonValue,
-  );
+  const step = input.buyerJourney.step;
 
-  // Validation should only run when the buyer is actually progressing
-  // through checkout.
-  if (
-    input.buyerJourney.step !== "CHECKOUT_INTERACTION" &&
-    input.buyerJourney.step !== "CHECKOUT_COMPLETION"
-  ) {
-    return {
-      operations: [
-        {
-          validationAdd: {
-            errors: [],
-          },
-        },
-      ],
-    };
+  if (step !== "CHECKOUT_INTERACTION" && step !== "CHECKOUT_COMPLETION") {
+    return { operations: [{ validationAdd: { errors: [] } }] };
   }
 
+  const config = parseConfig(input.cart.validation?.metafield?.jsonValue);
   const errors = [];
 
-  for (const deliveryGroup of input.cart.deliveryGroups) {
+  input.cart.deliveryGroups.forEach((deliveryGroup, index) => {
     const address = deliveryGroup.deliveryAddress;
-
-    if (!address) {
-      continue;
-    }
+    if (!address) return;
 
     const addressText = [
       address.address1,
@@ -178,28 +128,18 @@ export function cartValidationsGenerateRun(input) {
       address.provinceCode,
       address.zip,
       address.countryCode,
-    ]
-      .filter(Boolean)
-      .join(" ");
+    ].filter(Boolean).join(" ");
+
+    const target = `$.cart.deliveryGroups[${index}].deliveryAddress.address1`;
 
     if (config.po.enabled && isPoBox(addressText)) {
-      errors.push({
-        message: config.po.message,
-        target:
-          "$.cart.deliveryGroups[0].deliveryAddress.address1",
-      });
-
-      continue;
+      errors.push({ message: config.po.message, target });
+      return;
     }
 
     if (config.military.enabled && isMilitaryAddress(addressText)) {
-      errors.push({
-        message: config.military.message,
-        target:
-          "$.cart.deliveryGroups[0].deliveryAddress.address1",
-      });
-
-      continue;
+      errors.push({ message: config.military.message, target });
+      return;
     }
 
     const fields = {
@@ -215,25 +155,17 @@ export function cartValidationsGenerateRun(input) {
       if (matchesRule(fields, rule)) {
         errors.push({
           message:
-            typeof rule.message === "string"
+            typeof rule.message === "string" && rule.message.trim()
               ? rule.message
               : "This shipping address is not allowed.",
-          target:
-            "$.cart.deliveryGroups[0].deliveryAddress.address1",
+          target,
         });
-
         break;
       }
     }
-  }
+  });
 
   return {
-    operations: [
-      {
-        validationAdd: {
-          errors,
-        },
-      },
-    ],
+    operations: [{ validationAdd: { errors } }],
   };
 }
