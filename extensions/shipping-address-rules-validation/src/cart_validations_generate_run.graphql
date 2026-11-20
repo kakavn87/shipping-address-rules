@@ -1,7 +1,22 @@
 query CartValidationsGenerateRunInput {
   cart {
-    lines {
-      quantity
+    deliveryGroups {
+      deliveryAddress {
+        address1
+        address2
+        city
+        provinceCode
+        zip
+        countryCode
+      }
     }
+    validation {
+      metafield(namespace: "$app:shipping-address-rules", key: "config") {
+        jsonValue
+      }
+    }
+  }
+  buyerJourney {
+    step
   }
 }
