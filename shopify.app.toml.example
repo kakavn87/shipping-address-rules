@@ -1,0 +1,13 @@
+name = "Shipping Address Rules"
+# Replace with the Client ID from Shopify Dev Dashboard.
+client_id = "REPLACE_WITH_CLIENT_ID"
+# Replace with your deployed app URL.
+application_url = "https://REPLACE_WITH_APP_HOST"
+embedded = true
+handle = "shipping-address-rules"
+
+[access_scopes]
+scopes = "write_validations"
+
+[build]
+automatically_update_urls_on_dev = true
