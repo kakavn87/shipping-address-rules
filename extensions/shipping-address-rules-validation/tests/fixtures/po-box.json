@@ -1,0 +1,32 @@
+{
+  "payload": {
+    "export": "cart-validations-generate-run",
+    "target": "cart.validations.generate.run",
+    "input": {
+      "buyerJourney": { "step": "CHECKOUT_INTERACTION" },
+      "cart": {
+        "deliveryGroups": [{
+          "deliveryAddress": {
+            "address1": "PO Box 123",
+            "address2": null,
+            "city": "Austin",
+            "provinceCode": "TX",
+            "zip": "78701",
+            "countryCode": "US"
+          }
+        }],
+        "validation": { "metafield": null }
+      }
+    },
+    "output": {
+      "operations": [{
+        "validationAdd": {
+          "errors": [{
+            "message": "PO Box addresses are not allowed for shipping.",
+            "target": "$.cart.deliveryGroups[0].deliveryAddress.address1"
+          }]
+        }
+      }]
+    }
+  }
+}

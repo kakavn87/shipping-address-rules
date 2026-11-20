@@ -1,0 +1,35 @@
+name: Shopify Function CI
+
+on:
+  push:
+    branches: ["main", "feat/**"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  function-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm install
+
+      - name: Generate function types
+        working-directory: extensions/shipping-address-rules-validation
+        run: npm run typegen
+
+      - name: Build validation function
+        working-directory: extensions/shipping-address-rules-validation
+        run: npm run build
+
+      - name: Install Shopify CLI
+        run: npm install -g @shopify/cli@latest
+
+      - name: Run validation function tests
+        working-directory: extensions/shipping-address-rules-validation
+        run: npm test -- --run

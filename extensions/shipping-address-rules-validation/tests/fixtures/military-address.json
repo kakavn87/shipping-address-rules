@@ -1,0 +1,32 @@
+{
+  "payload": {
+    "export": "cart-validations-generate-run",
+    "target": "cart.validations.generate.run",
+    "input": {
+      "buyerJourney": { "step": "CHECKOUT_INTERACTION" },
+      "cart": {
+        "deliveryGroups": [{
+          "deliveryAddress": {
+            "address1": "PSC 123 BOX 456",
+            "address2": null,
+            "city": "APO",
+            "provinceCode": null,
+            "zip": "09012",
+            "countryCode": "US"
+          }
+        }],
+        "validation": { "metafield": null }
+      }
+    },
+    "output": {
+      "operations": [{
+        "validationAdd": {
+          "errors": [{
+            "message": "APO/FPO/DPO addresses are not allowed for shipping.",
+            "target": "$.cart.deliveryGroups[0].deliveryAddress.address1"
+          }]
+        }
+      }]
+    }
+  }
+}
