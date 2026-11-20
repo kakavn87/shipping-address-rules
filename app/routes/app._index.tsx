@@ -421,18 +421,36 @@ export default function Index() {
       <s-section>
         <s-stack gap="base">
           <s-stack direction="inline" gap="base" alignItems="center">
-            <s-switch
-              label="Protect checkout"
-              details="Block restricted shipping addresses before the customer can complete checkout."
-              checked={enabled}
-              onChange={toggleProtection}
-            />
-            <s-badge
-              tone={enabled ? "success" : "neutral"}
-              color={enabled ? "strong" : "base"}
-            >
-              {enabled ? "ON" : "OFF"}
-            </s-badge>
+            <s-stack gap="small">
+              <s-text type="strong">Protect checkout</s-text>
+              <s-text tone="neutral">
+                Block restricted shipping addresses before the customer can complete checkout.
+              </s-text>
+            </s-stack>
+            <s-stack direction="inline" gap="small">
+              <s-button
+                variant={enabled ? "primary" : "secondary"}
+                onClick={() => {
+                  if (!enabled) {
+                    setEnabled(true);
+                    submitConfig("toggle", true);
+                  }
+                }}
+              >
+                ON
+              </s-button>
+              <s-button
+                variant={!enabled ? "primary" : "secondary"}
+                onClick={() => {
+                  if (enabled) {
+                    setEnabled(false);
+                    submitConfig("toggle", false);
+                  }
+                }}
+              >
+                OFF
+              </s-button>
+            </s-stack>
           </s-stack>
           {!validation && (
             <s-banner tone="info">
