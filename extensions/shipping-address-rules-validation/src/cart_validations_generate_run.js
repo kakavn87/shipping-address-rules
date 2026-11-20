@@ -114,7 +114,7 @@ export function cartValidationsGenerateRun(input) {
     return { operations: [{ validationAdd: { errors: [] } }] };
   }
 
-  const config = parseConfig(input.cart.validation?.metafield?.jsonValue);
+  const config = parseConfig(input.validation?.metafield?.jsonValue);
   const errors = [];
 
   input.cart.deliveryGroups.forEach((deliveryGroup, index) => {
